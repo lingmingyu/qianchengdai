@@ -1,0 +1,5 @@
+# 存储 git 提交的过滤信息
+.pytest_cache/
+assets/
+user.yaml           # 不要提交
+data/

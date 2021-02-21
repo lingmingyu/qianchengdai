@@ -1,0 +1,45 @@
+[2021-02-21 22:13:54,853] [INFO] [test_recharge.py] [line 27] 充值前账号金额:59200.00
+[2021-02-21 22:13:55,008] [INFO] [test_recharge.py] [line 45] 充值前账号金额59200.00,充值金额10000,充值后账户总金额69200.00
+[2021-02-21 22:15:42,175] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 857, 'leave_amount': 106160.0, 'mobile_phone': '15558191960', 'reg_name': '小齐', 'reg_time': '2021-01-28 21:54:47.0', 'type': 0, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-21 22:20:00', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjg1NywiZXhwIjoxNjEzOTE3MjAwfQ.PbJDAlinOg_Xj0BydX9YKzsOR3T2P3xnKwW8fvrYUIr19kRz4gM-fQKx1yEdZqfwx_GtrsKuilhiA6a7E_Pk6w'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:42,524] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 1919155, 'leave_amount': 0.0, 'mobile_phone': '15558191962', 'reg_name': '小齐借钱', 'reg_time': '2021-02-04 20:30:21.0', 'type': 1, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-21 22:20:01', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjE5MTkxNTUsImV4cCI6MTYxMzkxNzIwMX0.4wHUAYg0kBnHr0fJf0oR2vu6OVlRu3v8j_N9liq6asGAVcIoaAZr9ymoOhyvo5z8GYyGerq7EUb3tjfwBvNwcA'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:42,862] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 21630, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-21 22:15:01.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:43,182] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:43,524] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '项目不存在', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:43,860] [INFO] [test_audit.py] [line 25] resp:{'code': 1, 'msg': 'approved_or_not只能为true或者false', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:44,188] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '数值格式异常', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:44,544] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 21636, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-21 22:15:03.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:44,865] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-21 22:15:47,813] [INFO] [test_recharge.py] [line 27] 充值前账号金额:69100.00
+[2021-02-21 22:15:47,979] [INFO] [test_recharge.py] [line 45] 充值前账号金额69100.00,充值金额10000,充值后账户总金额79100.00
+[2021-02-21 22:15:48,269] [INFO] [request_handler.py] [line 18] {"mobile_phone":"13053091985","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-21 22:15:48,394] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 10017156, 'reg_name': '小齐', 'mobile_phone': '13053091985'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.123847', 'error': '', 'rowNum': 1}
+[2021-02-21 22:15:48,395] [INFO] [request_handler.py] [line 18] {}
+[2021-02-21 22:15:48,483] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '手机号为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.086981', 'error': '', 'rowNum': 2}
+[2021-02-21 22:15:48,485] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-21 22:15:48,601] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '账号已存在', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.114815', 'error': '', 'rowNum': 3}
+[2021-02-21 22:15:48,603] [INFO] [request_handler.py] [line 18] {"mobile_phone":"1000000000","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-21 22:15:48,688] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '无效的手机格式', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.084459', 'error': '', 'rowNum': 4}
+[2021-02-21 22:15:48,690] [INFO] [request_handler.py] [line 18] {"mobile_phone":"","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-21 22:15:48,768] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '手机号为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.077178', 'error': '', 'rowNum': 5}
+[2021-02-21 22:15:48,770] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"","type":0,"reg_name":"小齐"}
+[2021-02-21 22:15:48,848] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '密码为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.076466', 'error': '', 'rowNum': 6}
+[2021-02-21 22:15:48,849] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"1234567","type":0,"reg_name":"小齐"}
+[2021-02-21 22:15:48,930] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '密码格式为8到16位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.07953', 'error': '', 'rowNum': 7}
+[2021-02-21 22:15:48,931] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191963","pwd":"12345678123456789","type":0,"reg_name":"小齐"}
+[2021-02-21 22:15:49,011] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '密码格式为8到16位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.078198', 'error': '', 'rowNum': 8}
+[2021-02-21 22:15:49,289] [INFO] [request_handler.py] [line 18] {"mobile_phone":"18620018100","pwd":"12345678","reg_name":"小齐"}
+[2021-02-21 22:15:49,399] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 10017157, 'reg_name': '小齐', 'mobile_phone': '18620018100'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.108144', 'error': '', 'rowNum': 9}
+[2021-02-21 22:15:49,405] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191966","pwd":"12345678","type":3,"reg_name":"小齐"}
+[2021-02-21 22:15:49,484] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '不支持的用户类型', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.076785', 'error': '', 'rowNum': 10}
+[2021-02-21 22:15:49,774] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15455508097","pwd":"12345678","type":1,"reg_name":"小齐"}
+[2021-02-21 22:15:49,862] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '无效的手机格式', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.086904', 'error': '', 'rowNum': 11}
+[2021-02-21 22:15:49,864] [ERROR] [test_registers.py] [line 19] 类型为1时注册测试失败assert 'OK' == '无效的手机格式'
+  - 无效的手机格式
+  + OK
+[2021-02-21 22:15:50,239] [INFO] [request_handler.py] [line 18] {"mobile_phone":"18973519189","pwd":"12345678","type":0}
+[2021-02-21 22:15:50,352] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 10017158, 'reg_name': '小柠檬', 'mobile_phone': '18973519189'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.111655', 'error': '', 'rowNum': 12}
+[2021-02-21 22:15:50,353] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191967","pwd":"12345678","type":0,"reg_name":"小齐小齐小齐小齐小齐小"}
+[2021-02-21 22:15:50,439] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '用户昵称长度超过10位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.08476', 'error': '', 'rowNum': 13}
+[2021-02-21 22:15:50,885] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:79100.00
+[2021-02-21 22:15:51,146] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:79100.00
+[2021-02-21 22:15:51,319] [INFO] [test_withdraw.py] [line 60] 提现前账号金额79100.00,提现金额100,提现后账户总金额79000.00

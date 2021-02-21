@@ -1,0 +1,244 @@
+[2021-02-06 16:18:26,458] [INFO] [test_recharge.py] [line 36] 测试通过
+[2021-02-06 16:18:26,721] [INFO] [test_recharge.py] [line 36] 测试通过
+[2021-02-06 16:18:26,951] [INFO] [test_recharge.py] [line 36] 测试通过
+[2021-02-06 16:18:27,201] [INFO] [test_recharge.py] [line 36] 测试通过
+[2021-02-06 16:18:27,450] [INFO] [test_recharge.py] [line 36] 测试通过
+[2021-02-06 16:18:27,690] [INFO] [test_recharge.py] [line 36] 测试通过
+[2021-02-06 16:18:27,940] [INFO] [test_recharge.py] [line 36] 测试通过
+[2021-02-06 16:42:06,219] [INFO] [test_recharge.py] [line 28] money_before5900.00
+[2021-02-06 16:42:06,380] [INFO] [test_recharge.py] [line 46] 充值前账号金额5900.00,充值金额100,充值后账户总金额6000.00
+[2021-02-06 16:42:46,728] [INFO] [test_recharge.py] [line 28] money_before6000.00
+[2021-02-06 16:42:46,908] [INFO] [test_recharge.py] [line 46] 充值前账号金额6000.00,充值金额100,充值后账户总金额6100.00
+[2021-02-06 16:43:28,306] [INFO] [test_recharge.py] [line 27] money_before6100.00
+[2021-02-06 16:43:28,476] [INFO] [test_recharge.py] [line 45] 充值前账号金额6100.00,充值金额100,充值后账户总金额6200.00
+[2021-02-06 16:43:50,958] [INFO] [test_recharge.py] [line 27] 充值前账号金额:6200.00
+[2021-02-06 16:43:51,128] [INFO] [test_recharge.py] [line 45] 充值前账号金额6200.00,充值金额100,充值后账户总金额6300.00
+[2021-02-06 16:58:38,620] [INFO] [test_recharge.py] [line 27] 充值前账号金额:6300.00
+[2021-02-06 16:58:38,780] [INFO] [test_recharge.py] [line 45] 充值前账号金额6300.00,充值金额100,充值后账户总金额6400.00
+[2021-02-06 16:58:51,724] [INFO] [test_withdraw.py] [line 50] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 16:58:52,374] [INFO] [test_withdraw.py] [line 50] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:01:33,729] [INFO] [test_withdraw.py] [line 50] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:01:34,368] [INFO] [test_withdraw.py] [line 50] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:03:23,058] [INFO] [test_withdraw.py] [line 50] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:03:23,801] [INFO] [test_withdraw.py] [line 50] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:03:35,470] [INFO] [test_withdraw.py] [line 50] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:03:36,073] [INFO] [test_withdraw.py] [line 50] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:04:40,297] [INFO] [test_withdraw.py] [line 50] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:04:50,716] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:04:50,885] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额100,充值后账户总金额100.00
+[2021-02-06 17:05:15,450] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:05:15,620] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额100,充值后账户总金额100.00
+[2021-02-06 17:08:01,032] [INFO] [test_withdraw.py] [line 41] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:08:10,615] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:08:10,775] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额100,充值后账户总金额100.00
+[2021-02-06 17:08:15,716] [INFO] [test_recharge.py] [line 27] 充值前账号金额:100.00
+[2021-02-06 17:08:15,885] [INFO] [test_recharge.py] [line 45] 充值前账号金额100.00,充值金额100,充值后账户总金额200.00
+[2021-02-06 17:09:45,573] [INFO] [test_recharge.py] [line 27] 充值前账号金额:100.00
+[2021-02-06 17:09:45,754] [INFO] [test_recharge.py] [line 45] 充值前账号金额100.00,充值金额10000,充值后账户总金额10100.00
+[2021-02-06 17:11:16,427] [INFO] [test_withdraw.py] [line 43] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:11:17,031] [INFO] [test_withdraw.py] [line 43] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:11:50,164] [INFO] [test_withdraw.py] [line 44] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:11:50,794] [INFO] [test_withdraw.py] [line 44] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:12:08,617] [INFO] [test_withdraw.py] [line 44] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:12:09,227] [INFO] [test_withdraw.py] [line 44] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:12:39,925] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:12:40,095] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额10000,充值后账户总金额10000.00
+[2021-02-06 17:12:45,752] [INFO] [test_withdraw.py] [line 44] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:12:46,380] [INFO] [test_withdraw.py] [line 44] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:13:53,060] [INFO] [test_withdraw.py] [line 45] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:13:53,710] [INFO] [test_withdraw.py] [line 45] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:15:24,990] [INFO] [test_withdraw.py] [line 46] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:15:25,625] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:16:23,754] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:16:23,924] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额10000,充值后账户总金额10000.00
+[2021-02-06 17:16:32,624] [INFO] [test_withdraw.py] [line 46] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:16:33,233] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:17:26,703] [INFO] [test_withdraw.py] [line 46] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:17:27,342] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:19:10,819] [INFO] [test_withdraw.py] [line 47] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:19:11,458] [INFO] [test_withdraw.py] [line 47] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:19:34,029] [INFO] [test_withdraw.py] [line 47] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:19:34,639] [INFO] [test_withdraw.py] [line 47] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:23:15,578] [INFO] [test_withdraw.py] [line 46] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:23:16,225] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:25:33,111] [INFO] [test_withdraw.py] [line 45] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:25:33,761] [INFO] [test_withdraw.py] [line 45] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:28:51,573] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:28:51,743] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额10000,充值后账户总金额10000.00
+[2021-02-06 17:29:54,087] [INFO] [test_withdraw.py] [line 45] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:29:54,707] [INFO] [test_withdraw.py] [line 45] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:30:16,922] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:30:17,092] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额10000,充值后账户总金额10000.00
+[2021-02-06 17:30:51,902] [INFO] [test_withdraw.py] [line 46] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:30:52,512] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:31:31,027] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:31:31,197] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额10000,充值后账户总金额10000.00
+[2021-02-06 17:32:07,877] [INFO] [test_withdraw.py] [line 47] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:32:08,517] [INFO] [test_withdraw.py] [line 47] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:32:30,392] [INFO] [test_withdraw.py] [line 47] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:32:31,022] [INFO] [test_withdraw.py] [line 47] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:32:52,557] [INFO] [test_withdraw.py] [line 47] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:32:53,187] [INFO] [test_withdraw.py] [line 47] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:34:44,000] [INFO] [test_withdraw.py] [line 47] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:36:46,148] [INFO] [test_withdraw.py] [line 47] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:37:28,068] [INFO] [test_withdraw.py] [line 32] 充值前账号金额:1.00
+[2021-02-06 17:37:28,158] [INFO] [test_withdraw.py] [line 44] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:37:28,768] [INFO] [test_withdraw.py] [line 44] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:41:35,887] [INFO] [test_withdraw.py] [line 32] 充值前账号金额:0.00
+[2021-02-06 17:41:36,507] [INFO] [test_withdraw.py] [line 45] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:42:24,251] [INFO] [test_withdraw.py] [line 32] 充值前账号金额:0.00
+[2021-02-06 17:42:24,341] [INFO] [test_withdraw.py] [line 45] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:42:24,981] [INFO] [test_withdraw.py] [line 45] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:42:59,026] [INFO] [test_withdraw.py] [line 32] 充值前账号金额:0.00
+[2021-02-06 17:42:59,116] [INFO] [test_withdraw.py] [line 46] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 17:42:59,755] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:47:50,407] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:48:30,972] [INFO] [test_withdraw.py] [line 32] 充值前账号金额:0.00
+[2021-02-06 17:48:31,581] [INFO] [test_withdraw.py] [line 46] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:53:15,632] [INFO] [test_withdraw.py] [line 31] 充值前账号金额:0.00
+[2021-02-06 17:53:16,241] [INFO] [test_withdraw.py] [line 31] 充值前账号金额:0.00
+[2021-02-06 17:53:16,332] [INFO] [test_withdraw.py] [line 43] code不正确,提现成功测试失败assert 1002 == 0
+[2021-02-06 17:53:29,927] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 17:53:30,092] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额10000,充值后账户总金额10000.00
+[2021-02-06 17:53:49,682] [INFO] [test_withdraw.py] [line 31] 充值前账号金额:10000.00
+[2021-02-06 17:53:50,252] [INFO] [test_withdraw.py] [line 31] 充值前账号金额:10000.00
+[2021-02-06 17:54:16,802] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9900.00
+[2021-02-06 17:54:17,372] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9900.00
+[2021-02-06 17:54:31,060] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9800.00
+[2021-02-06 17:54:31,690] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9800.00
+[2021-02-06 17:59:13,742] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9700.00
+[2021-02-06 17:59:14,342] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9700.00
+[2021-02-06 17:59:14,512] [INFO] [test_withdraw.py] [line 60] 提现前账号金额9700.00,提现金额100,提现后账户总金额9600.00
+[2021-02-06 18:04:26,779] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9600.00
+[2021-02-06 18:04:27,359] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9600.00
+[2021-02-06 18:05:28,097] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9500.00
+[2021-02-06 18:05:28,667] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9500.00
+[2021-02-06 18:06:35,048] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9400.00
+[2021-02-06 18:06:35,654] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9400.00
+[2021-02-06 18:07:05,924] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9300.00
+[2021-02-06 18:07:06,499] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9300.00
+[2021-02-06 18:07:27,309] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9200.00
+[2021-02-06 18:07:27,939] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9200.00
+[2021-02-06 18:10:41,152] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9100.00
+[2021-02-06 18:10:41,722] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9100.00
+[2021-02-06 18:13:49,143] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9000.00
+[2021-02-06 18:13:49,763] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9000.00
+[2021-02-06 18:18:08,056] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9100.00
+[2021-02-06 18:18:08,136] [INFO] [test_withdraw.py] [line 50] 提现前后账户金额不正确,充值成功测试失败assert (10000 - 10000) == 19100.0
+[2021-02-06 18:18:09,245] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:19100.00
+[2021-02-06 18:18:09,345] [INFO] [test_withdraw.py] [line 41] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 18:18:09,825] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9999.00
+[2021-02-06 18:18:09,915] [INFO] [test_withdraw.py] [line 50] 提现前后账户金额不正确,提现成功测试失败assert (9100.0 - 9100.0) == 899.0
+[2021-02-06 18:22:43,686] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:899.00
+[2021-02-06 18:22:44,995] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:10899.00
+[2021-02-06 18:22:45,095] [INFO] [test_withdraw.py] [line 41] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 18:22:45,615] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9999.00
+[2021-02-06 18:22:45,695] [INFO] [test_withdraw.py] [line 50] 提现前后账户金额不正确,提现成功测试失败assert (899.0 - 899.0) == 9100.0
+[2021-02-06 18:23:17,526] [INFO] [test_withdraw.py] [line 41] code不正确,提现金额大于账户金额测试失败assert 0 == 1002
+[2021-02-06 18:23:18,046] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:9999.00
+[2021-02-06 18:23:18,136] [INFO] [test_withdraw.py] [line 50] 提现前后账户金额不正确,提现成功测试失败assert (9100.0 - 9100.0) == 899.0
+[2021-02-06 18:25:36,789] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:899.00
+[2021-02-06 18:25:37,391] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:899.00
+[2021-02-06 18:25:37,561] [INFO] [test_withdraw.py] [line 60] 提现前账号金额899.00,提现金额899,提现后账户总金额0.00
+[2021-02-06 18:25:55,875] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:0.00
+[2021-02-06 18:25:56,434] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:0.00
+[2021-02-06 18:25:56,604] [INFO] [test_withdraw.py] [line 60] 提现前账号金额0.00,提现金额0,提现后账户总金额0.00
+[2021-02-06 18:26:17,332] [INFO] [test_recharge.py] [line 27] 充值前账号金额:0.00
+[2021-02-06 18:26:17,502] [INFO] [test_recharge.py] [line 45] 充值前账号金额0.00,充值金额10000,充值后账户总金额10000.00
+[2021-02-06 18:26:39,073] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:10000.00
+[2021-02-06 18:26:39,625] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:10000.00
+[2021-02-06 18:26:39,786] [INFO] [test_withdraw.py] [line 60] 提现前账号金额10000.00,提现金额100,提现后账户总金额9900.00
+[2021-02-06 19:30:11,989] [INFO] [test_add.py] [line 29] code不正确,用户不正确测试失败assert 1005 == 2
+[2021-02-06 19:32:19,432] [INFO] [test_add.py] [line 29] code不正确,用户不正确测试失败assert 1005 == 2
+[2021-02-06 19:32:56,626] [INFO] [test_add.py] [line 29] code不正确,用户不正确测试失败assert 1005 == 2
+[2021-02-06 19:33:10,047] [INFO] [test_recharge.py] [line 27] 充值前账号金额:9900.00
+[2021-02-06 19:33:10,207] [INFO] [test_recharge.py] [line 45] 充值前账号金额9900.00,充值金额10000,充值后账户总金额19900.00
+[2021-02-06 20:25:17,160] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 857, 'leave_amount': 106160.0, 'mobile_phone': '15558191960', 'reg_name': '小齐', 'reg_time': '2021-01-28 21:54:47.0', 'type': 0, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-06 20:30:15', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjg1NywiZXhwIjoxNjEyNjE0NjE1fQ.bc-1_6_8MhYEWGOmZyvTje9RMPugV-2-efuguEPKL_zhCmn5GsdONCxK8hpFHlgfaGfCdfhKHyOw5t1SZe1Tkg'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:17,500] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 1919155, 'leave_amount': 0.0, 'mobile_phone': '15558191962', 'reg_name': '小齐借钱', 'reg_time': '2021-02-04 20:30:21.0', 'type': 1, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-06 20:30:16', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjE5MTkxNTUsImV4cCI6MTYxMjYxNDYxNn0.EFSlHAOQyIiw6NU0jcUjfvMBGqSUWTqJAq-PIQyBzEfmKcHlixZ6BQf34ZpOxpEUDf0pqhpaJ3A5L2vQOM4EAg'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:17,880] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 6652, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-06 20:25:16.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:18,210] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:18,550] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '项目不存在', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:18,889] [INFO] [test_audit.py] [line 25] resp:{'code': 1, 'msg': 'approved_or_not只能为true或者false', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:19,279] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '数值格式异常', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:19,619] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 6658, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-06 20:25:18.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:19,979] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:29,308] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 857, 'leave_amount': 106160.0, 'mobile_phone': '15558191960', 'reg_name': '小齐', 'reg_time': '2021-01-28 21:54:47.0', 'type': 0, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-06 20:30:28', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjg1NywiZXhwIjoxNjEyNjE0NjI4fQ.NcQx-Vio6uDpDexC52ghCFPPMr56xYekQACyN3HDuJf9qFOYmK6iCShENYqL1mxccGXYhuhj2Kep8g5yKO5K8A'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:29,628] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 1919155, 'leave_amount': 0.0, 'mobile_phone': '15558191962', 'reg_name': '小齐借钱', 'reg_time': '2021-02-04 20:30:21.0', 'type': 1, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-06 20:30:28', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjE5MTkxNTUsImV4cCI6MTYxMjYxNDYyOH0.xWtdR3jsdBmyGLo0h0SisUyuG4STJcRXueLKDZ6h58pXBz4JXMC-F_alEgrKMHjKW6jhbx_qvYMx0m7rtgTcOA'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:29,957] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 6664, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-06 20:25:28.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:30,297] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:30,657] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '项目不存在', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:31,021] [INFO] [test_audit.py] [line 25] resp:{'code': 1, 'msg': 'approved_or_not只能为true或者false', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:31,341] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '数值格式异常', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:31,693] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 6670, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-06 20:25:30.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:32,063] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:25:36,310] [INFO] [test_recharge.py] [line 27] 充值前账号金额:19800.00
+[2021-02-06 20:25:36,480] [INFO] [test_recharge.py] [line 45] 充值前账号金额19800.00,充值金额10000,充值后账户总金额29800.00
+[2021-02-06 20:25:36,751] [INFO] [request_handler.py] [line 18] {"mobile_phone":"13582619920","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:25:36,861] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969573, 'reg_name': '小齐', 'mobile_phone': '13582619920'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.107276', 'error': '', 'rowNum': 1}
+[2021-02-06 20:25:36,861] [INFO] [request_handler.py] [line 18] {}
+[2021-02-06 20:25:36,951] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '手机号为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.091076', 'error': '', 'rowNum': 2}
+[2021-02-06 20:25:36,951] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:25:37,061] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '账号已存在', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.102146', 'error': '', 'rowNum': 3}
+[2021-02-06 20:25:37,061] [INFO] [request_handler.py] [line 18] {"mobile_phone":"1000000000","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:25:37,141] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '无效的手机格式', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.079272', 'error': '', 'rowNum': 4}
+[2021-02-06 20:25:37,141] [INFO] [request_handler.py] [line 18] {"mobile_phone":"","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:25:37,221] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '手机号为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.078523', 'error': '', 'rowNum': 5}
+[2021-02-06 20:25:37,221] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"","type":0,"reg_name":"小齐"}
+[2021-02-06 20:25:37,301] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '密码为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.076538', 'error': '', 'rowNum': 6}
+[2021-02-06 20:25:37,301] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"1234567","type":0,"reg_name":"小齐"}
+[2021-02-06 20:25:37,381] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '密码格式为8到16位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.078527', 'error': '', 'rowNum': 7}
+[2021-02-06 20:25:37,381] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191963","pwd":"12345678123456789","type":0,"reg_name":"小齐"}
+[2021-02-06 20:25:37,481] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '密码格式为8到16位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.090697', 'error': '', 'rowNum': 8}
+[2021-02-06 20:25:37,750] [INFO] [request_handler.py] [line 18] {"mobile_phone":"13630235343","pwd":"12345678","reg_name":"小齐"}
+[2021-02-06 20:25:37,880] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969574, 'reg_name': '小齐', 'mobile_phone': '13630235343'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.123059', 'error': '', 'rowNum': 9}
+[2021-02-06 20:25:37,880] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191966","pwd":"12345678","type":3,"reg_name":"小齐"}
+[2021-02-06 20:25:37,970] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '不支持的用户类型', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.089355', 'error': '', 'rowNum': 10}
+[2021-02-06 20:25:38,240] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15959272925","pwd":"12345678","type":1,"reg_name":"小齐"}
+[2021-02-06 20:25:38,370] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969575, 'reg_name': '小齐', 'mobile_phone': '15959272925'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.12478', 'error': '', 'rowNum': 11}
+[2021-02-06 20:25:38,630] [INFO] [request_handler.py] [line 18] {"mobile_phone":"13217738711","pwd":"12345678","type":0}
+[2021-02-06 20:25:38,750] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969576, 'reg_name': '小柠檬', 'mobile_phone': '13217738711'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.113179', 'error': '', 'rowNum': 12}
+[2021-02-06 20:25:38,760] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191967","pwd":"12345678","type":0,"reg_name":"小齐小齐小齐小齐小齐小"}
+[2021-02-06 20:25:38,840] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '用户昵称长度超过10位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.080379', 'error': '', 'rowNum': 13}
+[2021-02-06 20:25:40,169] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:29800.00
+[2021-02-06 20:25:40,749] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:29800.00
+[2021-02-06 20:25:40,921] [INFO] [test_withdraw.py] [line 60] 提现前账号金额29800.00,提现金额100,提现后账户总金额29700.00
+[2021-02-06 20:27:48,785] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 857, 'leave_amount': 106160.0, 'mobile_phone': '15558191960', 'reg_name': '小齐', 'reg_time': '2021-01-28 21:54:47.0', 'type': 0, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-06 20:32:47', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjg1NywiZXhwIjoxNjEyNjE0NzY3fQ.4Xrs4OMUkE0DHhpQiw_Qn5BCv09fy_w9iELfRxCu7lFZuWh3yAybIhP9OwEFWQBlUrg-ralle003ktmO95CWSw'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:49,145] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 1919155, 'leave_amount': 0.0, 'mobile_phone': '15558191962', 'reg_name': '小齐借钱', 'reg_time': '2021-02-04 20:30:21.0', 'type': 1, 'token_info': {'token_type': 'Bearer', 'expires_in': '2021-02-06 20:32:47', 'token': 'eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjE5MTkxNTUsImV4cCI6MTYxMjYxNDc2N30.ECsUihIQnZrjQ4LgLFmLU7liaHPyIO0gILDVUu-xYqlf2io-Pl--x0nY9wB2lDTQDPh0L-m2klBwLJbudvGDsQ'}}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:49,505] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 6677, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-06 20:27:48.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:49,885] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:50,234] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '项目不存在', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:50,584] [INFO] [test_audit.py] [line 25] resp:{'code': 1, 'msg': 'approved_or_not只能为true或者false', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:50,947] [INFO] [test_audit.py] [line 25] resp:{'code': 2, 'msg': '数值格式异常', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:51,327] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': {'id': 6683, 'member_id': 1919155, 'title': '小齐测试', 'amount': 5000000.0, 'loan_rate': 18.0, 'loan_term': 6, 'loan_date_type': 1, 'bidding_days': 5, 'create_time': '2021-02-06 20:27:50.0', 'bidding_start_time': None, 'full_time': None, 'status': 1}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:51,677] [INFO] [test_audit.py] [line 25] resp:{'code': 0, 'msg': 'OK', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved'}
+[2021-02-06 20:27:55,845] [INFO] [test_recharge.py] [line 27] 充值前账号金额:29600.00
+[2021-02-06 20:27:56,018] [INFO] [test_recharge.py] [line 45] 充值前账号金额29600.00,充值金额10000,充值后账户总金额39600.00
+[2021-02-06 20:27:56,308] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15025115526","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:27:56,418] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969578, 'reg_name': '小齐', 'mobile_phone': '15025115526'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.113076', 'error': '', 'rowNum': 1}
+[2021-02-06 20:27:56,418] [INFO] [request_handler.py] [line 18] {}
+[2021-02-06 20:27:56,498] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '手机号为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.079138', 'error': '', 'rowNum': 2}
+[2021-02-06 20:27:56,507] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:27:56,617] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '账号已存在', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.109266', 'error': '', 'rowNum': 3}
+[2021-02-06 20:27:56,617] [INFO] [request_handler.py] [line 18] {"mobile_phone":"1000000000","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:27:56,697] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '无效的手机格式', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.08198', 'error': '', 'rowNum': 4}
+[2021-02-06 20:27:56,697] [INFO] [request_handler.py] [line 18] {"mobile_phone":"","pwd":"12345678","type":0,"reg_name":"小齐"}
+[2021-02-06 20:27:56,777] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '手机号为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.076643', 'error': '', 'rowNum': 5}
+[2021-02-06 20:27:56,777] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"","type":0,"reg_name":"小齐"}
+[2021-02-06 20:27:56,867] [INFO] [request_handler.py] [line 36] resp{'code': 1, 'msg': '密码为空', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.089994', 'error': '', 'rowNum': 6}
+[2021-02-06 20:27:56,867] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191960","pwd":"1234567","type":0,"reg_name":"小齐"}
+[2021-02-06 20:27:56,977] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '密码格式为8到16位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.100152', 'error': '', 'rowNum': 7}
+[2021-02-06 20:27:56,977] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191963","pwd":"12345678123456789","type":0,"reg_name":"小齐"}
+[2021-02-06 20:27:57,067] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '密码格式为8到16位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.091507', 'error': '', 'rowNum': 8}
+[2021-02-06 20:27:57,327] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15841312839","pwd":"12345678","reg_name":"小齐"}
+[2021-02-06 20:27:57,437] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969579, 'reg_name': '小齐', 'mobile_phone': '15841312839'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.110925', 'error': '', 'rowNum': 9}
+[2021-02-06 20:27:57,437] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191966","pwd":"12345678","type":3,"reg_name":"小齐"}
+[2021-02-06 20:27:57,527] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '不支持的用户类型', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.08158', 'error': '', 'rowNum': 10}
+[2021-02-06 20:27:57,797] [INFO] [request_handler.py] [line 18] {"mobile_phone":"18220947478","pwd":"12345678","type":1,"reg_name":"小齐"}
+[2021-02-06 20:27:57,897] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969580, 'reg_name': '小齐', 'mobile_phone': '18220947478'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.106763', 'error': '', 'rowNum': 11}
+[2021-02-06 20:27:58,167] [INFO] [request_handler.py] [line 18] {"mobile_phone":"18010476144","pwd":"12345678","type":0}
+[2021-02-06 20:27:58,296] [INFO] [request_handler.py] [line 36] resp{'code': 0, 'msg': 'OK', 'data': {'id': 1969581, 'reg_name': '小柠檬', 'mobile_phone': '18010476144'}, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.119843', 'error': '', 'rowNum': 12}
+[2021-02-06 20:27:58,296] [INFO] [request_handler.py] [line 18] {"mobile_phone":"15558191967","pwd":"12345678","type":0,"reg_name":"小齐小齐小齐小齐小齐小"}
+[2021-02-06 20:27:58,376] [INFO] [request_handler.py] [line 36] resp{'code': 2, 'msg': '用户昵称长度超过10位', 'data': None, 'copyright': 'Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved', 'StatusCode': '200', 'time': '0.078115', 'error': '', 'rowNum': 13}
+[2021-02-06 20:27:59,686] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:39600.00
+[2021-02-06 20:28:00,275] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:39600.00
+[2021-02-06 20:28:00,455] [INFO] [test_withdraw.py] [line 60] 提现前账号金额39600.00,提现金额100,提现后账户总金额39500.00

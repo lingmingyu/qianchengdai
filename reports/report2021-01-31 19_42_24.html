@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++)
+        filterItems[i].hidden = false;
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>report2021-01-31 19_42_24.html</h1>
+    <p>Report generated on 31-Jan-2021 at 19:42:32 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>JAVA_HOME</td>
+        <td>D:\Java\jdk</td></tr>
+      <tr>
+        <td>Packages</td>
+        <td>{"pluggy": "0.13.1", "py": "1.10.0", "pytest": "6.2.1"}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Windows-10-10.0.18362-SP0</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{"Faker": "5.6.5", "allure-pytest": "2.8.29", "html": "3.1.1", "metadata": "1.11.0"}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.8.1</td></tr></table>
+    <h2>Summary</h2>
+    <p>34 tests ran in 7.10 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">34 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas0]</td>
+          <td class="col-duration">0.33</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas1]</td>
+          <td class="col-duration">0.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas2]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas3]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas4]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas5]</td>
+          <td class="col-duration">0.32</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas6]</td>
+          <td class="col-duration">0.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas7]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas8]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_login[datas0]</td>
+          <td class="col-duration">0.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_login[datas1]</td>
+          <td class="col-duration">0.16</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_login[datas2]</td>
+          <td class="col-duration">0.30</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_login[datas3]</td>
+          <td class="col-duration">0.53</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_login[datas4]</td>
+          <td class="col-duration">0.16</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_login[datas5]</td>
+          <td class="col-duration">0.15</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas0]</td>
+          <td class="col-duration">0.33</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 1081, in emit
+    msg = self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;13052626127&#x27;,)
+--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 69, in emit
+    if self.shouldRollover(record):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 185, in shouldRollover
+    msg = &quot;%s\n&quot; % self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;13052626127&#x27;,)
+[2021-01-31 19:42:29,143] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;13052626127&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:29,223] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1189578, &#x27;reg_name&#x27;: &#x27;小齐&#x27;, &#x27;mobile_phone&#x27;: &#x27;13052626127&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.079846&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 1}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas1]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:29,234] [INFO] [request_handler.py] [line 18] {}
+[2021-01-31 19:42:29,323] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 1, &#x27;msg&#x27;: &#x27;手机号为空&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.088526&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 2}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas2]</td>
+          <td class="col-duration">0.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:29,323] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191960&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:29,394] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;账号已存在&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.073662&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 3}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas3]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:29,404] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;1000000000&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:29,488] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;无效的手机格式&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.086236&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 4}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas4]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:29,493] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:29,574] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 1, &#x27;msg&#x27;: &#x27;手机号为空&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.080798&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 5}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas5]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:29,583] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191960&quot;,&quot;pwd&quot;:&quot;&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:29,674] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 1, &#x27;msg&#x27;: &#x27;密码为空&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.090037&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 6}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas6]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:29,674] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191960&quot;,&quot;pwd&quot;:&quot;1234567&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:29,764] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;密码格式为8到16位&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.083677&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 7}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas7]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:29,764] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191963&quot;,&quot;pwd&quot;:&quot;12345678123456789&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:29,843] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;密码格式为8到16位&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.082231&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 8}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas8]</td>
+          <td class="col-duration">0.32</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 1081, in emit
+    msg = self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;15679399329&#x27;,)
+--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 69, in emit
+    if self.shouldRollover(record):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 185, in shouldRollover
+    msg = &quot;%s\n&quot; % self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;15679399329&#x27;,)
+[2021-01-31 19:42:30,074] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15679399329&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:30,164] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1189579, &#x27;reg_name&#x27;: &#x27;小齐&#x27;, &#x27;mobile_phone&#x27;: &#x27;15679399329&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.091853&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 9}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas9]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:30,173] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191966&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:3,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:30,273] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;不支持的用户类型&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.090243&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 10}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas10]</td>
+          <td class="col-duration">0.38</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 1081, in emit
+    msg = self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;13587701922&#x27;,)
+--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 69, in emit
+    if self.shouldRollover(record):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 185, in shouldRollover
+    msg = &quot;%s\n&quot; % self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;13587701922&#x27;,)
+[2021-01-31 19:42:30,563] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;13587701922&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:1,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-01-31 19:42:30,654] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1189580, &#x27;reg_name&#x27;: &#x27;小齐&#x27;, &#x27;mobile_phone&#x27;: &#x27;13587701922&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.087688&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 11}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas11]</td>
+          <td class="col-duration">0.40</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 1081, in emit
+    msg = self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;18389324414&#x27;,)
+--- Logging error ---
+Traceback (most recent call last):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 69, in emit
+    if self.shouldRollover(record):
+  File &quot;D:\Python38\lib\logging\handlers.py&quot;, line 185, in shouldRollover
+    msg = &quot;%s\n&quot; % self.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 925, in format
+    return fmt.format(record)
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 664, in format
+    record.message = record.getMessage()
+  File &quot;D:\Python38\lib\logging\__init__.py&quot;, line 369, in getMessage
+    msg = msg % self.args
+TypeError: not all arguments converted during string formatting
+Call stack:
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 21, in &lt;module&gt;
+    run_case()
+  File &quot;D:/Pychram-Workspace/py36/lesson21_api_v1/run.py&quot;, line 19, in run_case
+    pytest.main([&#x27;--html={}&#x27;.format(htmlreport)])
+  File &quot;D:\Python38\lib\site-packages\_pytest\config\__init__.py&quot;, line 162, in main
+    ret: Union[ExitCode, int] = config.hook.pytest_cmdline_main(
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 316, in pytest_cmdline_main
+    return wrap_session(config, _main)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 269, in wrap_session
+    session.exitstatus = doit(config, session) or 0
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 323, in _main
+    config.hook.pytest_runtestloop(session=session)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\main.py&quot;, line 348, in pytest_runtestloop
+    item.config.hook.pytest_runtest_protocol(item=item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 109, in pytest_runtest_protocol
+    runtestprotocol(item, nextitem=nextitem)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 126, in runtestprotocol
+    reports.append(call_and_report(item, &quot;call&quot;, log))
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 215, in call_and_report
+    call = call_runtest_hook(item, when, **kwds)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 254, in call_runtest_hook
+    return CallInfo.from_call(
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 311, in from_call
+    result: Optional[TResult] = func()
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 255, in &lt;lambda&gt;
+    lambda: ihook(item=item, **kwds), when=when, reraise=reraise
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\runner.py&quot;, line 162, in pytest_runtest_call
+    item.runtest()
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 1641, in runtest
+    self.ihook.pytest_pyfunc_call(pyfuncitem=self)
+  File &quot;D:\Python38\lib\site-packages\pluggy\hooks.py&quot;, line 286, in __call__
+    return self._hookexec(self, self.get_hookimpls(), kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 93, in _hookexec
+    return self._inner_hookexec(hook, methods, kwargs)
+  File &quot;D:\Python38\lib\site-packages\pluggy\manager.py&quot;, line 84, in &lt;lambda&gt;
+    self._inner_hookexec = lambda hook, methods, kwargs: hook.multicall(
+  File &quot;D:\Python38\lib\site-packages\pluggy\callers.py&quot;, line 187, in _multicall
+    res = hook_impl.function(*args)
+  File &quot;D:\Python38\lib\site-packages\_pytest\python.py&quot;, line 183, in pytest_pyfunc_call
+    result = testfunction(**testargs)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\tests\test_registers.py&quot;, line 19, in test_registers
+    resp = send_requests(env_url,datas)
+  File &quot;D:\Pychram-Workspace\py36\lesson21_api_v1\common\request_handler.py&quot;, line 16, in send_requests
+    logger.info(&quot;phone:&quot;,phone)
+Message: &#x27;phone:&#x27;
+Arguments: (&#x27;18389324414&#x27;,)
+[2021-01-31 19:42:30,974] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;18389324414&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0}
+[2021-01-31 19:42:31,064] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1189581, &#x27;reg_name&#x27;: &#x27;小柠檬&#x27;, &#x27;mobile_phone&#x27;: &#x27;18389324414&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.089892&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 12}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::Test_register::test_registers[datas12]</td>
+          <td class="col-duration">0.10</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:31,064] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191967&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐小齐小齐小齐小齐小&quot;}
+[2021-01-31 19:42:31,174] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;用户昵称长度超过10位&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.106433&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 13}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_login[datas0]</td>
+          <td class="col-duration">0.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_login[datas1]</td>
+          <td class="col-duration">0.16</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_login[datas2]</td>
+          <td class="col-duration">0.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_login[datas3]</td>
+          <td class="col-duration">0.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_login[datas4]</td>
+          <td class="col-duration">0.18</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_login[datas5]</td>
+          <td class="col-duration">0.17</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-01-31 19:42:32,243] [INFO] [test_withdraw.py] [line 46] 提现前金额105870.0 - 提现金额100.0 == 提现后金额105770.0
+<br/></div></td></tr></tbody></table></body></html>

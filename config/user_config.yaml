@@ -1,0 +1,13 @@
+# 注释, key后面的: 后必须加空格分开 key value
+admin_user:
+  phone: '15558191960'
+  pwd: '12345678'
+  member_id: 857
+
+investor_user:
+  phone: '15558191961'
+  pwd: '12345678'
+
+loan_user:
+  phone: '15558191962'
+  pwd: '12345678'

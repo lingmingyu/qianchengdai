@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Test Report</title>
+    <link href="assets/style.css" rel="stylesheet" type="text/css"/></head>
+  <body onLoad="init()">
+    <script>/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+
+function toArray(iter) {
+    if (iter === null) {
+        return null;
+    }
+    return Array.prototype.slice.call(iter);
+}
+
+function find(selector, elem) { // eslint-disable-line no-redeclare
+    if (!elem) {
+        elem = document;
+    }
+    return elem.querySelector(selector);
+}
+
+function findAll(selector, elem) {
+    if (!elem) {
+        elem = document;
+    }
+    return toArray(elem.querySelectorAll(selector));
+}
+
+function sortColumn(elem) {
+    toggleSortStates(elem);
+    const colIndex = toArray(elem.parentNode.childNodes).indexOf(elem);
+    let key;
+    if (elem.classList.contains('result')) {
+        key = keyResult;
+    } else if (elem.classList.contains('links')) {
+        key = keyLink;
+    } else {
+        key = keyAlpha;
+    }
+    sortTable(elem, key(colIndex));
+}
+
+function showAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(showExtras);
+}
+
+function hideAllExtras() { // eslint-disable-line no-unused-vars
+    findAll('.col-result').forEach(hideExtras);
+}
+
+function showExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.remove('collapsed');
+    expandcollapse.classList.remove('expander');
+    expandcollapse.classList.add('collapser');
+}
+
+function hideExtras(colresultElem) {
+    const extras = colresultElem.parentNode.nextElementSibling;
+    const expandcollapse = colresultElem.firstElementChild;
+    extras.classList.add('collapsed');
+    expandcollapse.classList.remove('collapser');
+    expandcollapse.classList.add('expander');
+}
+
+function showFilters() {
+    const filterItems = document.getElementsByClassName('filter');
+    for (let i = 0; i < filterItems.length; i++)
+        filterItems[i].hidden = false;
+}
+
+function addCollapse() {
+    // Add links for show/hide all
+    const resulttable = find('table#results-table');
+    const showhideall = document.createElement('p');
+    showhideall.innerHTML = '<a href="javascript:showAllExtras()">Show all details</a> / ' +
+                            '<a href="javascript:hideAllExtras()">Hide all details</a>';
+    resulttable.parentElement.insertBefore(showhideall, resulttable);
+
+    // Add show/hide link to each result
+    findAll('.col-result').forEach(function(elem) {
+        const collapsed = getQueryParameter('collapsed') || 'Passed';
+        const extras = elem.parentNode.nextElementSibling;
+        const expandcollapse = document.createElement('span');
+        if (extras.classList.contains('collapsed')) {
+            expandcollapse.classList.add('expander');
+        } else if (collapsed.includes(elem.innerHTML)) {
+            extras.classList.add('collapsed');
+            expandcollapse.classList.add('expander');
+        } else {
+            expandcollapse.classList.add('collapser');
+        }
+        elem.appendChild(expandcollapse);
+
+        elem.addEventListener('click', function(event) {
+            if (event.currentTarget.parentNode.nextElementSibling.classList.contains('collapsed')) {
+                showExtras(event.currentTarget);
+            } else {
+                hideExtras(event.currentTarget);
+            }
+        });
+    });
+}
+
+function getQueryParameter(name) {
+    const match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+function init () { // eslint-disable-line no-unused-vars
+    resetSortHeaders();
+
+    addCollapse();
+
+    showFilters();
+
+    sortColumn(find('.initial-sort'));
+
+    findAll('.sortable').forEach(function(elem) {
+        elem.addEventListener('click',
+            function() {
+                sortColumn(elem);
+            }, false);
+    });
+}
+
+function sortTable(clicked, keyFunc) {
+    const rows = findAll('.results-table-row');
+    const reversed = !clicked.classList.contains('asc');
+    const sortedRows = sort(rows, keyFunc, reversed);
+    /* Whole table is removed here because browsers acts much slower
+     * when appending existing elements.
+     */
+    const thead = document.getElementById('results-table-head');
+    document.getElementById('results-table').remove();
+    const parent = document.createElement('table');
+    parent.id = 'results-table';
+    parent.appendChild(thead);
+    sortedRows.forEach(function(elem) {
+        parent.appendChild(elem);
+    });
+    document.getElementsByTagName('BODY')[0].appendChild(parent);
+}
+
+function sort(items, keyFunc, reversed) {
+    const sortArray = items.map(function(item, i) {
+        return [keyFunc(item), i];
+    });
+
+    sortArray.sort(function(a, b) {
+        const keyA = a[0];
+        const keyB = b[0];
+
+        if (keyA == keyB) return 0;
+
+        if (reversed) {
+            return keyA < keyB ? 1 : -1;
+        } else {
+            return keyA > keyB ? 1 : -1;
+        }
+    });
+
+    return sortArray.map(function(item) {
+        const index = item[1];
+        return items[index];
+    });
+}
+
+function keyAlpha(colIndex) {
+    return function(elem) {
+        return elem.childNodes[1].childNodes[colIndex].firstChild.data.toLowerCase();
+    };
+}
+
+function keyLink(colIndex) {
+    return function(elem) {
+        const dataCell = elem.childNodes[1].childNodes[colIndex].firstChild;
+        return dataCell == null ? '' : dataCell.innerText.toLowerCase();
+    };
+}
+
+function keyResult(colIndex) {
+    return function(elem) {
+        const strings = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed',
+            'Skipped', 'Passed'];
+        return strings.indexOf(elem.childNodes[1].childNodes[colIndex].firstChild.data);
+    };
+}
+
+function resetSortHeaders() {
+    findAll('.sort-icon').forEach(function(elem) {
+        elem.parentNode.removeChild(elem);
+    });
+    findAll('.sortable').forEach(function(elem) {
+        const icon = document.createElement('div');
+        icon.className = 'sort-icon';
+        icon.textContent = 'vvv';
+        elem.insertBefore(icon, elem.firstChild);
+        elem.classList.remove('desc', 'active');
+        elem.classList.add('asc', 'inactive');
+    });
+}
+
+function toggleSortStates(elem) {
+    //if active, toggle between asc and desc
+    if (elem.classList.contains('active')) {
+        elem.classList.toggle('asc');
+        elem.classList.toggle('desc');
+    }
+
+    //if inactive, reset all other functions and add ascending active
+    if (elem.classList.contains('inactive')) {
+        resetSortHeaders();
+        elem.classList.remove('inactive');
+        elem.classList.add('active');
+    }
+}
+
+function isAllRowsHidden(value) {
+    return value.hidden == false;
+}
+
+function filterTable(elem) { // eslint-disable-line no-unused-vars
+    const outcomeAtt = 'data-test-result';
+    const outcome = elem.getAttribute(outcomeAtt);
+    const classOutcome = outcome + ' results-table-row';
+    const outcomeRows = document.getElementsByClassName(classOutcome);
+
+    for(let i = 0; i < outcomeRows.length; i++){
+        outcomeRows[i].hidden = !elem.checked;
+    }
+
+    const rows = findAll('.results-table-row').filter(isAllRowsHidden);
+    const allRowsHidden = rows.length == 0 ? true : false;
+    const notFoundMessage = document.getElementById('not-found-message');
+    notFoundMessage.hidden = !allRowsHidden;
+}
+</script>
+    <h1>report2021-02-06 20_25_27.html</h1>
+    <p>Report generated on 06-Feb-2021 at 20:25:40 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a> v3.1.1</p>
+    <h2>Environment</h2>
+    <table id="environment">
+      <tr>
+        <td>JAVA_HOME</td>
+        <td>D:\Java\jdk</td></tr>
+      <tr>
+        <td>Packages</td>
+        <td>{"pluggy": "0.13.1", "py": "1.10.0", "pytest": "6.2.1"}</td></tr>
+      <tr>
+        <td>Platform</td>
+        <td>Windows-10-10.0.18362-SP0</td></tr>
+      <tr>
+        <td>Plugins</td>
+        <td>{"Faker": "5.6.5", "allure-pytest": "2.8.29", "html": "3.1.1", "metadata": "1.11.0"}</td></tr>
+      <tr>
+        <td>Python</td>
+        <td>3.8.1</td></tr></table>
+    <h2>Summary</h2>
+    <p>62 tests ran in 12.91 seconds. </p>
+    <p class="filter" hidden="true">(Un)check the boxes to filter the results.</p><input checked="true" class="filter" data-test-result="passed" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="passed">62 passed</span>, <input checked="true" class="filter" data-test-result="skipped" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="skipped">0 skipped</span>, <input checked="true" class="filter" data-test-result="failed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="failed">0 failed</span>, <input checked="true" class="filter" data-test-result="error" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="error">0 errors</span>, <input checked="true" class="filter" data-test-result="xfailed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xfailed">0 expected failures</span>, <input checked="true" class="filter" data-test-result="xpassed" disabled="true" hidden="true" name="filter_checkbox" onChange="filterTable(this)" type="checkbox"/><span class="xpassed">0 unexpected passes</span>
+    <h2>Results</h2>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable result initial-sort" col="result">Result</th>
+          <th class="sortable" col="name">Test</th>
+          <th class="sortable" col="duration">Duration</th>
+          <th class="sortable links" col="links">Links</th></tr>
+        <tr hidden="true" id="not-found-message">
+          <th colspan="4">No results found. Try to check the filters</th></tr></thead>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_add.py::test_withdraw[datas0]</td>
+          <td class="col-duration">0.15</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_add.py::test_withdraw[datas1]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_add.py::test_withdraw[datas2]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_add.py::test_withdraw[datas3]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_add.py::test_withdraw[datas4]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_add.py::test_withdraw[datas5]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_add.py::test_withdraw[datas6]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas0]</td>
+          <td class="col-duration">0.35</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:29,308] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 857, &#x27;leave_amount&#x27;: 106160.0, &#x27;mobile_phone&#x27;: &#x27;15558191960&#x27;, &#x27;reg_name&#x27;: &#x27;小齐&#x27;, &#x27;reg_time&#x27;: &#x27;2021-01-28 21:54:47.0&#x27;, &#x27;type&#x27;: 0, &#x27;token_info&#x27;: {&#x27;token_type&#x27;: &#x27;Bearer&#x27;, &#x27;expires_in&#x27;: &#x27;2021-02-06 20:30:28&#x27;, &#x27;token&#x27;: &#x27;eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjg1NywiZXhwIjoxNjEyNjE0NjI4fQ.NcQx-Vio6uDpDexC52ghCFPPMr56xYekQACyN3HDuJf9qFOYmK6iCShENYqL1mxccGXYhuhj2Kep8g5yKO5K8A&#x27;}}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas1]</td>
+          <td class="col-duration">0.32</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:29,628] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1919155, &#x27;leave_amount&#x27;: 0.0, &#x27;mobile_phone&#x27;: &#x27;15558191962&#x27;, &#x27;reg_name&#x27;: &#x27;小齐借钱&#x27;, &#x27;reg_time&#x27;: &#x27;2021-02-04 20:30:21.0&#x27;, &#x27;type&#x27;: 1, &#x27;token_info&#x27;: {&#x27;token_type&#x27;: &#x27;Bearer&#x27;, &#x27;expires_in&#x27;: &#x27;2021-02-06 20:30:28&#x27;, &#x27;token&#x27;: &#x27;eyJhbGciOiJIUzUxMiJ9.eyJtZW1iZXJfaWQiOjE5MTkxNTUsImV4cCI6MTYxMjYxNDYyOH0.xWtdR3jsdBmyGLo0h0SisUyuG4STJcRXueLKDZ6h58pXBz4JXMC-F_alEgrKMHjKW6jhbx_qvYMx0m7rtgTcOA&#x27;}}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas2]</td>
+          <td class="col-duration">0.32</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:29,957] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 6664, &#x27;member_id&#x27;: 1919155, &#x27;title&#x27;: &#x27;小齐测试&#x27;, &#x27;amount&#x27;: 5000000.0, &#x27;loan_rate&#x27;: 18.0, &#x27;loan_term&#x27;: 6, &#x27;loan_date_type&#x27;: 1, &#x27;bidding_days&#x27;: 5, &#x27;create_time&#x27;: &#x27;2021-02-06 20:25:28.0&#x27;, &#x27;bidding_start_time&#x27;: None, &#x27;full_time&#x27;: None, &#x27;status&#x27;: 1}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas3]</td>
+          <td class="col-duration">0.34</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:30,297] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas4]</td>
+          <td class="col-duration">0.35</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:30,657] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;项目不存在&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas5]</td>
+          <td class="col-duration">0.35</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:31,021] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 1, &#x27;msg&#x27;: &#x27;approved_or_not只能为true或者false&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas6]</td>
+          <td class="col-duration">0.32</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:31,341] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;数值格式异常&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas7]</td>
+          <td class="col-duration">0.34</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:31,693] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 6670, &#x27;member_id&#x27;: 1919155, &#x27;title&#x27;: &#x27;小齐测试&#x27;, &#x27;amount&#x27;: 5000000.0, &#x27;loan_rate&#x27;: 18.0, &#x27;loan_term&#x27;: 6, &#x27;loan_date_type&#x27;: 1, &#x27;bidding_days&#x27;: 5, &#x27;create_time&#x27;: &#x27;2021-02-06 20:25:30.0&#x27;, &#x27;bidding_start_time&#x27;: None, &#x27;full_time&#x27;: None, &#x27;status&#x27;: 1}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_audit.py::test_audit[datas8]</td>
+          <td class="col-duration">0.36</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:32,063] [INFO] [test_audit.py] [line 25] resp:{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas0]</td>
+          <td class="col-duration">0.10</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas1]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas2]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas3]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas4]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas5]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas6]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas7]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_invest.py::test_audit[datas8]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas0]</td>
+          <td class="col-duration">0.41</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas1]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas2]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas3]</td>
+          <td class="col-duration">0.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas4]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas5]</td>
+          <td class="col-duration">0.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas6]</td>
+          <td class="col-duration">0.42</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas7]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas8]</td>
+          <td class="col-duration">0.11</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_login.py::test_login[datas9]</td>
+          <td class="col-duration">0.12</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_recharge[datas0]</td>
+          <td class="col-duration">0.28</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_recharge[datas1]</td>
+          <td class="col-duration">0.24</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_recharge[datas2]</td>
+          <td class="col-duration">0.25</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_recharge[datas3]</td>
+          <td class="col-duration">0.26</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_recharge[datas4]</td>
+          <td class="col-duration">0.28</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_recharge[datas5]</td>
+          <td class="col-duration">0.25</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_recharge.py::test_recharge[datas6]</td>
+          <td class="col-duration">0.40</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:36,310] [INFO] [test_recharge.py] [line 27] 充值前账号金额:19800.00
+[2021-02-06 20:25:36,480] [INFO] [test_recharge.py] [line 45] 充值前账号金额19800.00,充值金额10000,充值后账户总金额29800.00
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas0]</td>
+          <td class="col-duration">0.37</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:36,751] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;13582619920&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:36,861] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1969573, &#x27;reg_name&#x27;: &#x27;小齐&#x27;, &#x27;mobile_phone&#x27;: &#x27;13582619920&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.107276&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 1}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas1]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:36,861] [INFO] [request_handler.py] [line 18] {}
+[2021-02-06 20:25:36,951] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 1, &#x27;msg&#x27;: &#x27;手机号为空&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.091076&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 2}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas2]</td>
+          <td class="col-duration">0.10</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:36,951] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191960&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,061] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;账号已存在&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.102146&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 3}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas3]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:37,061] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;1000000000&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,141] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;无效的手机格式&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.079272&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 4}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas4]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:37,141] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,221] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 1, &#x27;msg&#x27;: &#x27;手机号为空&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.078523&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 5}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas5]</td>
+          <td class="col-duration">0.07</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:37,221] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191960&quot;,&quot;pwd&quot;:&quot;&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,301] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 1, &#x27;msg&#x27;: &#x27;密码为空&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.076538&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 6}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas6]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:37,301] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191960&quot;,&quot;pwd&quot;:&quot;1234567&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,381] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;密码格式为8到16位&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.078527&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 7}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas7]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:37,381] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191963&quot;,&quot;pwd&quot;:&quot;12345678123456789&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,481] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;密码格式为8到16位&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.090697&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 8}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas8]</td>
+          <td class="col-duration">0.40</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:37,750] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;13630235343&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,880] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1969574, &#x27;reg_name&#x27;: &#x27;小齐&#x27;, &#x27;mobile_phone&#x27;: &#x27;13630235343&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.123059&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 9}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas9]</td>
+          <td class="col-duration">0.09</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:37,880] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191966&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:3,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:37,970] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;不支持的用户类型&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.089355&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 10}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas10]</td>
+          <td class="col-duration">0.39</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:38,240] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15959272925&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:1,&quot;reg_name&quot;:&quot;小齐&quot;}
+[2021-02-06 20:25:38,370] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1969575, &#x27;reg_name&#x27;: &#x27;小齐&#x27;, &#x27;mobile_phone&#x27;: &#x27;15959272925&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.12478&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 11}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas11]</td>
+          <td class="col-duration">0.38</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:38,630] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;13217738711&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0}
+[2021-02-06 20:25:38,750] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 0, &#x27;msg&#x27;: &#x27;OK&#x27;, &#x27;data&#x27;: {&#x27;id&#x27;: 1969576, &#x27;reg_name&#x27;: &#x27;小柠檬&#x27;, &#x27;mobile_phone&#x27;: &#x27;13217738711&#x27;}, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.113179&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 12}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_registers.py::test_registers[datas12]</td>
+          <td class="col-duration">0.08</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:38,760] [INFO] [request_handler.py] [line 18] {&quot;mobile_phone&quot;:&quot;15558191967&quot;,&quot;pwd&quot;:&quot;12345678&quot;,&quot;type&quot;:0,&quot;reg_name&quot;:&quot;小齐小齐小齐小齐小齐小&quot;}
+[2021-02-06 20:25:38,840] [INFO] [request_handler.py] [line 36] resp{&#x27;code&#x27;: 2, &#x27;msg&#x27;: &#x27;用户昵称长度超过10位&#x27;, &#x27;data&#x27;: None, &#x27;copyright&#x27;: &#x27;Copyright 柠檬班 © 2017-2020 湖南省零檬信息技术有限公司 All Rights Reserved&#x27;, &#x27;StatusCode&#x27;: &#x27;200&#x27;, &#x27;time&#x27;: &#x27;0.080379&#x27;, &#x27;error&#x27;: &#x27;&#x27;, &#x27;rowNum&#x27;: 13}
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_withdraw[datas0]</td>
+          <td class="col-duration">0.28</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_withdraw[datas1]</td>
+          <td class="col-duration">0.26</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_withdraw[datas2]</td>
+          <td class="col-duration">0.25</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_withdraw[datas3]</td>
+          <td class="col-duration">0.25</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_withdraw[datas4]</td>
+          <td class="col-duration">0.36</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:40,169] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:29800.00
+<br/></div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_withdraw[datas5]</td>
+          <td class="col-duration">0.24</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="empty log">No log output captured.</div></td></tr></tbody>
+      <tbody class="passed results-table-row">
+        <tr>
+          <td class="col-result">Passed</td>
+          <td class="col-name">tests/test_withdraw.py::test_withdraw[datas6]</td>
+          <td class="col-duration">0.40</td>
+          <td class="col-links"></td></tr>
+        <tr>
+          <td class="extra" colspan="4">
+            <div class="log"> ------------------------------Captured stderr call------------------------------ <br/>[2021-02-06 20:25:40,749] [INFO] [test_withdraw.py] [line 30] 充值前账号金额:29800.00
+[2021-02-06 20:25:40,921] [INFO] [test_withdraw.py] [line 60] 提现前账号金额29800.00,提现金额100,提现后账户总金额29700.00
+<br/></div></td></tr></tbody></table></body></html>
